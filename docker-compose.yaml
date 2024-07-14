@@ -1,0 +1,23 @@
+version: "3.9"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nest-docker
+    image: nest-docker-image:1.0.0
+    ports:
+      - 2812:3000
+    volumes:
+      - ./src:/project/src
+      - /project/node_modules
+    networks:
+      - nestjs-network
+
+volumes:
+  node_modules:
+    driver: local
+
+networks:
+  nestjs-network:
+    driver: bridge
