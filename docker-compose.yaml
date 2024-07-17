@@ -5,7 +5,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: nest-docker
-    image: nest-docker-image:1.4.3
+    image: nest-docker-image
     ports:
       - 2812:3000
     volumes:
