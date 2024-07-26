@@ -6,7 +6,13 @@
 - class-validator : this package provides validation pipes
     https://docs.nestjs.com/techniques/validation
     npm i --save class-validator class-transformer
-- 
+- class-transformer
 
-# command
-- docker-compose run <container_id> <command>
+
+# install project
+- docker-compose up -d
+- docker exec -it nest-docker sh
+- npm install
+- Ctrl + D
+- docker-compose down
+- docker-compose up -d
