@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { TaskStatus } from './tasks.enum';
+import { TaskStatus } from './task.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { SearchTaskDto } from './dto/search-task.dto';
 import { TaskRepository } from './tasks.repository';
-import { Task } from './tasks.entity';
+import { Task } from './task.entity';
 import { DeleteResult } from 'typeorm';
 
 @Injectable()
