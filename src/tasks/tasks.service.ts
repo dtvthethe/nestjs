@@ -1,42 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Task, TaskStatus } from './task.module';
+import { Injectable } from '@nestjs/common';
+import { TaskStatus } from './tasks.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
-import { v4 as uuid } from 'uuid';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { SearchTaskDto } from './dto/search-task.dto';
+import { TaskRepository } from './tasks.repository';
+import { Task } from './tasks.entity';
+import { DeleteResult } from 'typeorm';
 
 @Injectable()
 export class TasksService {
-  private tasks: Task[] = [];
-
-  constructor() {
-    const task: Task = {
-      description: 'Default task',
-      id: uuid(),
-      status: TaskStatus.OPEN,
-      title: 'default',
-    };
-    this.tasks.push(task);
-  }
-
-  private getTaskIndex(id: string): number {
-    const index: number = this.tasks.findIndex((task: Task) => task.id === id);
-
-    if (index < 0) {
-      throw new NotFoundException();
-    }
-
-    return index;
-  }
-
-  /**
-   * Get all tasks
-   *
-   * @returns Task[]
-   */
-  public getAllTasks(): Task[] {
-    return this.tasks;
-  }
+  constructor(private taskRepository: TaskRepository) {}
 
   /**
    * Get task by id.
@@ -44,25 +17,30 @@ export class TasksService {
    * @param id string
    * @returns Task
    */
-  public getTaskById(id: string): Task {
-    const index: number = this.getTaskIndex(id);
+  public async getTaskById(id: string): Promise<Task> {
+    const task = await this.taskRepository.findOneBy({ id });
 
-    return this.tasks[index];
+    // if (!task) {
+    //   throw new NotFoundException('ko tim thay task');
+    // }
+
+    return task;
   }
 
   /**
    * Create task.
    *
    * @param createTaskDto CreateTaskDto
-   * @returns Task
+   * @returns Promise<Task>
    */
-  public createTask(createTaskDto: CreateTaskDto): Task {
-    const task: any = createTaskDto;
-    task.status = TaskStatus.OPEN;
-    task.id = uuid();
-    this.tasks.push(task);
+  public createTask(createTaskDto: CreateTaskDto): Promise<Task> {
+    const { title, description } = createTaskDto;
 
-    return task;
+    return this.taskRepository.save({
+      title,
+      description,
+      status: TaskStatus.OPEN,
+    });
   }
 
   /**
@@ -70,9 +48,10 @@ export class TasksService {
    *
    * @param id string
    */
-  public deleteTaskById(id: string): void {
-    const index: number = this.getTaskIndex(id);
-    this.tasks.splice(index, 1);
+  public async deleteTaskById(id: string): Promise<number> {
+    const result: DeleteResult = await this.taskRepository.delete(id);
+
+    return result.affected;
   }
 
   /**
@@ -82,13 +61,22 @@ export class TasksService {
    * @param updateTaskDto UpdateTaskDto
    * @returns Task
    */
-  public updateTaskById(id: string, updateTaskDto: UpdateTaskDto): Task {
-    const index: number = this.getTaskIndex(id);
-    this.tasks[index].description = updateTaskDto.description;
-    this.tasks[index].status = updateTaskDto.status;
-    this.tasks[index].title = updateTaskDto.title;
+  public async updateTaskById(
+    id: string,
+    updateTaskDto: UpdateTaskDto,
+  ): Promise<Task> {
+    const task: Task = await this.taskRepository.findOneBy({ id });
 
-    return this.tasks[index];
+    // if (!task) {
+    //   throw new NotFoundException('ko tim thay task');
+    // }
+
+    task.title = updateTaskDto.title;
+    task.description = updateTaskDto.description;
+    task.status = updateTaskDto.status;
+    this.taskRepository.save(task);
+
+    return task;
   }
 
   /**
@@ -97,27 +85,7 @@ export class TasksService {
    * @param searchTaskDto SearchTaskDto
    * @returns Task[]
    */
-  public searchTask(searchTaskDto: SearchTaskDto): Task[] {
-    return this.tasks.filter((task: Task) => {
-      if (
-        searchTaskDto.description &&
-        task.description.includes(searchTaskDto.description)
-      ) {
-        return true;
-      }
-
-      if (
-        searchTaskDto.title &&
-        task.description.includes(searchTaskDto.title)
-      ) {
-        return true;
-      }
-
-      if (searchTaskDto.status && task.status === searchTaskDto.status) {
-        return true;
-      }
-
-      return false;
-    });
+  public searchTask(searchTaskDto: SearchTaskDto): Promise<Task[]> {
+    return this.taskRepository.searchBy(searchTaskDto);
   }
 }

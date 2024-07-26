@@ -13,8 +13,27 @@ services:
       - ./node_modules:/project/node_modules
       - ./package.json:/project/package.json
       - ./package-lock.json:/project/package-lock.json
+    depends_on:
+      - db
     networks:
       - nestjs-network
+
+  db:
+    image: postgres:12.19-alpine
+    container_name: nest-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: nestdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - nestjs-network
+
+volumes:
+  postgres_data:
 
 networks:
   nestjs-network:
