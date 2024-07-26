@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.8"
 services:
   app:
     build:
@@ -9,14 +9,10 @@ services:
     ports:
       - 2812:3000
     volumes:
-      - ./src:/project/src
+      - .:/project
       - ./node_modules:/project/node_modules
     networks:
       - nestjs-network
-
-volumes:
-  node_modules:
-    driver: local
 
 networks:
   nestjs-network:

@@ -8,6 +8,7 @@ export class SearchTaskDto {
   @IsOptional()
   description: string;
 
+  @IsOptional()
   @IsEnum(TaskStatus)
   status: TaskStatus;
 }
