@@ -9,6 +9,16 @@ import { SearchTaskDto } from './dto/search-task.dto';
 export class TasksService {
   private tasks: Task[] = [];
 
+  constructor() {
+    const task: Task = {
+      description: 'Default task',
+      id: uuid(),
+      status: TaskStatus.OPEN,
+      title: 'default',
+    };
+    this.tasks.push(task);
+  }
+
   private getTaskIndex(id: string): number {
     const index: number = this.tasks.findIndex((task: Task) => task.id === id);
 

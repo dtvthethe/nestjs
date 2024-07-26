@@ -9,8 +9,10 @@ services:
     ports:
       - 2812:3000
     volumes:
-      - .:/project
+      - ./src:/project/src
       - ./node_modules:/project/node_modules
+      - ./package.json:/project/package.json
+      - ./package-lock.json:/project/package-lock.json
     networks:
       - nestjs-network
 
