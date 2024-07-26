@@ -9,7 +9,7 @@ COPY package*.json ./
 # RUN yarn install
 
 RUN npm i -g @nestjs/cli
-RUN npm i --save @nestjs/config
+# RUN npm i --save @nestjs/config
 RUN npm install
 
 COPY . .
